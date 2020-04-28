@@ -1,6 +1,5 @@
 package kafka.streams.interactive.query.controllers;
 
-import kafka.streams.interactive.query.InventoryServiceInteractiveQueries;
 import kafka.streams.interactive.query.ProductBean;
 import kafka.streams.interactive.query.ProductPurchaseCountBean;
 import kafka.streams.interactive.query.services.InventoryService;
@@ -33,9 +32,9 @@ public class InventoryController {
     private final Log logger = LogFactory.getLog(getClass());
 
     @RequestMapping("/product/idx")
-    public ProductBean product(@RequestParam(value="id") Long id) {
-        final ReadOnlyKeyValueStore<Long, Product> productStore =
-                interactiveQueryService.getQueryableStore(InventoryService.ALL_PRODUCTS, QueryableStoreTypes.<Long, Product>keyValueStore());
+    public ProductBean product(@RequestParam(value="id") String id) {
+        final ReadOnlyKeyValueStore<String, Product> productStore =
+                interactiveQueryService.getQueryableStore(InventoryService.ALL_PRODUCTS, QueryableStoreTypes.<String, Product>keyValueStore());
 
         final Product product = productStore.get(id);
         if (product == null) {
@@ -78,13 +77,13 @@ public class InventoryController {
         value.forEach(productPurchaseCount -> {
 
             HostInfo hostInfo = interactiveQueryService.getHostInfo(InventoryService.ALL_PRODUCTS,
-                    productPurchaseCount.getProductId(), new LongSerializer());
+                    productPurchaseCount.getProductId(), new StringSerializer());
 
             if (interactiveQueryService.getCurrentHostInfo().equals(hostInfo)) {
                 logger.info("Product info request served from same host: " + hostInfo);
 
-                final ReadOnlyKeyValueStore<Long, Product> productStore =
-                        interactiveQueryService.getQueryableStore(InventoryService.ALL_PRODUCTS, QueryableStoreTypes.<Long, Product>keyValueStore());
+                final ReadOnlyKeyValueStore<String, Product> productStore =
+                        interactiveQueryService.getQueryableStore(InventoryService.ALL_PRODUCTS, QueryableStoreTypes.<String, Product>keyValueStore());
 
                 final Product product = productStore.get(productPurchaseCount.getProductId());
                 results.add(new ProductPurchaseCountBean(product.getBrand(),product.getName(), productPurchaseCount.getCount()));

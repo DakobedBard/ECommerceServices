@@ -12,7 +12,7 @@ spring.cloud.stream.kafka.streams.bindings.process-in-1:
     valueSerde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
     materializedAs: all-products
 spring.cloud.stream.kafka.streams.binder:
-  brokers: localhost
+  brokers: localhost:9092
   configuration:
     schema.registry.url: http://localhost:8081
     commit.interval.ms: 1000

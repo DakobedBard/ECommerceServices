@@ -34,7 +34,7 @@ public class InventoryService {
 
     //
     @Bean
-    public BiConsumer<KStream<String, PurchaseEvent>, KTable<Long, Product>> process() {
+    public BiConsumer<KStream<String, PurchaseEvent>, KTable<String, Product>> process() {
 
         return (s, t) -> {
             // create and configure the SpecificAvroSerdes required in this example
@@ -54,16 +54,16 @@ public class InventoryService {
             productPurchaseCountSerde.configure(serdeConfig, false);
 
             // Accept play events that have a duration >= the minimum
-            final KStream<Long, PurchaseEvent> purchasesByProductId =
+            final KStream<String, PurchaseEvent> purchasesByProductId =
                     s.map((key, value) -> KeyValue.pair(value.getProductId(), value));
 //								filter((region, event) -> event.getDuration() >= MIN_CHARTABLE_DURATION)
 //								// repartition based on song id
 //								.map((key, value) -> KeyValue.pair(value.getSongId(), value));
 
             // join the plays with song as we will use it later for charting
-            final KStream<Long, Product> productPurchases = purchasesByProductId.leftJoin(t,
+            final KStream<String, Product> productPurchases = purchasesByProductId.leftJoin(t,
                     (value1, song) -> song,
-                    Joined.with(Serdes.Long(), purchaseEventSerde, valueProductSerde));
+                    Joined.with(Serdes.String(), purchaseEventSerde, valueProductSerde));
 
             // create a state store to track song play counts
             final KTable<Product, Long> productPurchaseCounts = productPurchases.groupBy((songId, song) -> song,
@@ -124,7 +124,7 @@ public class InventoryService {
 
 
     public static class TopFiveProducts implements Iterable<PurchaseCount> {
-        private final Map<Long, PurchaseCount> currentProducts = new HashMap<>();
+        private final Map<String, PurchaseCount> currentProducts = new HashMap<>();
         private final TreeSet<PurchaseCount> topFive = new TreeSet<>((o1, o2) -> {
             final int result = o2.getCount().compareTo(o1.getCount());
             if (result != 0) {
@@ -176,7 +176,7 @@ public class InventoryService {
                             new DataOutputStream(out);
                     try {
                         for (PurchaseCount purchaseCount : topFiveProducts) {
-                            dataOutputStream.writeLong(purchaseCount.getProductId());
+                            dataOutputStream.writeUTF(purchaseCount.getProductId());
                             dataOutputStream.writeLong(purchaseCount.getCount());
                         }
                         dataOutputStream.flush();
@@ -203,7 +203,7 @@ public class InventoryService {
 
                 try {
                     while(dataInputStream.available() > 0) {
-                        result.add(new PurchaseCount(dataInputStream.readLong(),
+                        result.add(new PurchaseCount(dataInputStream.readUTF(),
                                 dataInputStream.readLong()));
                     }
                 } catch (IOException e) {

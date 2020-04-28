@@ -42,22 +42,32 @@ public class PurchaseEventProducer {
 		final SpecificAvroSerializer<Product> productSerializer = new SpecificAvroSerializer<>();
 		productSerializer.configure(serdeConfig, false);
 
-		final List<Product> products = Arrays.asList(new Product(1L,
+		final List<Product> products = Arrays.asList(new Product("a",
 						"Fresh Fruit For Rotting Vegetables",
 						"Dead Kennedys",
                         (long) 15.4),
-				new Product(2L,
+				new Product("b",
                         "Nike",
                         "Jordan X10",
                         (long) 100.4),
-				new Product(3L,
+				new Product("c",
 						"Addidas",
 						"All Star",
 						450L),
-				new Product(4L,
+				new Product("d",
 						"Puma",
 						"Shoes",
+						240L),
+				new Product("e",
+						"Addidas",
+						"Dumbo",
+						240L),
+				new Product("f",
+						"Addidas",
+						"Silly",
 						240L)
+
+
 		);
 
 		Map<String, Object> props = new HashMap<>();
@@ -71,11 +81,11 @@ public class PurchaseEventProducer {
 		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, purchaseEventSerializer.getClass());
 
 		Map<String, Object> props1 = new HashMap<>(props);
-		props1.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class);
+		props1.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 		props1.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, productSerializer.getClass());
 
-		DefaultKafkaProducerFactory<Long, Product> pf1 = new DefaultKafkaProducerFactory<>(props1);
-		KafkaTemplate<Long, Product> template1 = new KafkaTemplate<>(pf1, true);
+		DefaultKafkaProducerFactory<String, Product> pf1 = new DefaultKafkaProducerFactory<>(props1);
+		KafkaTemplate<String, Product> template1 = new KafkaTemplate<>(pf1, true);
 		template1.setDefaultTopic(InventoryService.PRODUCT_FEED);
 
         products.forEach(product -> {

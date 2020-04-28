@@ -22,13 +22,13 @@ import org.springframework.cloud.stream.binder.kafka.streams.InteractiveQuerySer
 
 
 @SpringBootApplication
-public class InventoryServiceInteractiveQueries {
+public class InventoryServiceApplication {
 
 	@Autowired
 	private InteractiveQueryService interactiveQueryService;
 
 	public static void main(String[] args) {
-		SpringApplication.run(InventoryServiceInteractiveQueries.class, args);
+		SpringApplication.run(InventoryServiceApplication.class, args);
 	}
 
 	public static class KStreamMusicSampleApplication {

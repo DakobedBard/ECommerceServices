@@ -3,7 +3,7 @@
  "name": "PurchaseEvent",
  "fields": [
      {"name": "customer_id",   "type": "long"},
-     {"name": "product_id",   "type": "long"},
+     {"name": "product_id",   "type": "string"},
      {"name": "quantity", "type": "long"}
  ]
 }
