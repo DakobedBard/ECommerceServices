@@ -2,8 +2,9 @@
  "type": "record",
  "name": "Product",
  "fields": [
-     {"name": "id",     "type": "long"},
+     {"name": "product_id",     "type": "long"},
+     {"name": "brand", "type": "string"},
      {"name": "name",   "type": "string"},
-     {"name": "genre",  "type": "string"}
+     {"name": "price",  "type": "long"}
  ]
 }

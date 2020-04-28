@@ -11,7 +11,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.state.HostInfo;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
-import org.mddarr.inventory.Product;
+import org.mddarr.products.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.binder.kafka.streams.InteractiveQueryService;
 import org.springframework.web.bind.annotation.RequestMapping;

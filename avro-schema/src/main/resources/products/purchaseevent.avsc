@@ -1,4 +1,4 @@
-{"namespace": "org.mddarr.inventory",
+{"namespace": "org.mddarr.products",
  "type": "record",
  "name": "PurchaseEvent",
  "fields": [

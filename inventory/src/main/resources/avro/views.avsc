@@ -1,9 +1,0 @@
-{"namespace": "org.mddarr",
- "type": "record",
- "name": "PageViewWithRegion",
- "fields": [
-     {"name": "user", "type": "string"},
-     {"name": "page", "type": "string"},
-     {"name": "region", "type": "string"}
- ]
-}

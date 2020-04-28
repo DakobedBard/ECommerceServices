@@ -1,8 +1,0 @@
-{"namespace": "org.mddarr.inventory",
- "type": "record",
- "name": "PurchaseCount",
- "fields": [
-     {"name": "product_id",  "type": "long"},
-     {"name": "count",   "type": "long"}
- ]
-}

@@ -10,9 +10,9 @@ import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.*;
 import org.apache.kafka.streams.state.KeyValueStore;
-import org.mddarr.inventory.Product;
-import org.mddarr.inventory.PurchaseCount;
-import org.mddarr.inventory.PurchaseEvent;
+import org.mddarr.products.Product;
+import org.mddarr.products.PurchaseCount;
+import org.mddarr.products.PurchaseEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
