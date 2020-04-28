@@ -1,5 +1,32 @@
 version: '2'
 services:
+
+  productDB:
+    image: debezium/example-postgres:${DEBEZIUM_VERSION}
+    volumes:
+      - product_volume:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=productdb
+    container_name: productDB
+    ports:
+      - 5433:5432
+    networks:
+      - mddarr
+
+  ordersDB:
+    image: debezium/example-postgres:${DEBEZIUM_VERSION}
+    ports:
+      - 5434:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=ordersDB
+    container_name: ordersDB
+    networks:
+      - mddarr
+
   postgres:
     image: debezium/example-postgres:${DEBEZIUM_VERSION}
     ports:
@@ -9,12 +36,25 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=customersDB
     container_name: db
+    networks:
+      - mddarr
+
+  mongodb-order:
+    image: mongo:3.4.22-xenial
+    ports:
+      - 27017:27017
+    networks:
+      - mddarr
+    container_name: mongosdb
+
   zookeeper:
     image: debezium/zookeeper:${DEBEZIUM_VERSION}
     ports:
       - 2181:2181
       - 2888:2888
       - 3888:3888
+    networks:
+      - mddarr
   kafka:
     image: debezium/kafka:${DEBEZIUM_VERSION}
     ports:
@@ -23,7 +63,9 @@ services:
       - zookeeper
     environment:
       - ZOOKEEPER_CONNECT=zookeeper:2181
-#
+    networks:
+      - mddarr
+  #
   schema-registry:
     image: confluentinc/cp-schema-registry
     ports:
@@ -36,23 +78,48 @@ services:
     links:
       - zookeeper
       - kafka
-  connect:
-    image: debezium/connect:${DEBEZIUM_VERSION}
-    ports:
-      - 8083:8083
-    links:
-      - kafka
-      - postgres
-      - schema-registry
-    environment:
-      - BOOTSTRAP_SERVERS=kafka:9092
-      - GROUP_ID=1
-      - CONFIG_STORAGE_TOPIC=my_connect_configs
-      - OFFSET_STORAGE_TOPIC=my_connect_offsets
-      - STATUS_STORAGE_TOPIC=my_connect_statuses
-      - KEY_CONVERTER=io.confluent.connect.avro.AvroConverter
-      - VALUE_CONVERTER=io.confluent.connect.avro.AvroConverter
-      - INTERNAL_KEY_CONVERTER=org.apache.kafka.connect.json.JsonConverter
-      - INTERNAL_VALUE_CONVERTER=org.apache.kafka.connect.json.JsonConverter
-      - CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL=http://schema-registry:8081
-      - CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL=http://schema-registry:8081
+    networks:
+      - mddarr
+#  connect:
+#    image: confluentinc/cp-kafka-connect:5.4.0-beta1
+#    container_name: connect
+#    depends_on:
+#      - zookeeper
+#      - kafka
+#      - schema-registry
+#    ports:
+#      - 8083:8083
+#    environment:
+#      CONNECT_BOOTSTRAP_SERVERS: "http://kafka:9092"
+#      CONNECT_REST_PORT: 8083
+#      CONNECT_GROUP_ID: kafka-connect-540
+#      CONNECT_CONFIG_STORAGE_TOPIC: _kafka-connect-540-configs
+#      CONNECT_OFFSET_STORAGE_TOPIC: _kafka-connect-540-offsets
+#      CONNECT_STATUS_STORAGE_TOPIC: _kafka-connect-540-status
+#      #      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+#      #      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+#      CONNECT_KEY_CONVERTER: io.confluent.connect.avro.AvroConverter
+#      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
+#      CONNECT_VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
+#      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
+#
+#      CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: "false"
+#      CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
+#      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+#      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+#      CONNECT_REST_ADVERTISED_HOST_NAME: "kafka-connect-01"
+#      CONNECT_LOG4J_ROOT_LOGLEVEL: "INFO"
+#      CONNECT_LOG4J_LOGGERS: "org.apache.kafka.connect.runtime.rest=WARN,org.reflections=ERROR"
+#      CONNECT_LOG4J_APPENDER_STDOUT_LAYOUT_CONVERSIONPATTERN: "[%d] %p %X{connector.context}%m (%c:%L)%n"
+#      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: "1"
+#      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: "1"
+#      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: "1"
+#      CONNECT_PLUGIN_PATH: /usr/share/java,/usr/share/confluent-hub-components
+#    networks:
+#      - mddarr
+
+
+volumes:
+  product_volume:
+networks:
+  mddarr:

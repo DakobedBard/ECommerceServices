@@ -19,5 +19,21 @@ spring.cloud.stream.kafka.streams.binder:
 spring.cloud.stream.kafka.streams.binder.autoAddPartitions: true
 spring.cloud.stream.kafka.streams.binder.minPartitionCount: 4
 spring.cloud.stream.kafka.streams.binder.configuration.application.server: localhost:8080
+spring:
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    database: POSTGRESQL
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+  datasource:
+    platform: postgres
+    url: jdbc:postgresql://localhost:5433/productdb
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
 
 spring.application.name: kafka-streams-iq-advanced-sample
