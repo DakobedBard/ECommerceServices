@@ -17,8 +17,9 @@ import java.util.*;
 
 public class ProductProducer {
     public static void main(String[] args) throws InterruptedException {
-        initProductsDB();
-        initProductsTopic();
+        getProductsFromDB();
+//        initProductsDB();
+//        initProductsTopic();
     }
     private static void initProductsDB() {
         final Map<String, String> serdeConfig = Collections.singletonMap(
@@ -69,6 +70,27 @@ public class ProductProducer {
             System.exit(0);
         }
     }
+    
+    public static List<Product> getProductsFromDB(){
+        List<Product> products = new ArrayList<>();
+        try (Connection con = DriverManager.getConnection("jdbc:postgresql://localhost:5433/productdb",
+                "postgres", "postgres");
+             PreparedStatement pst = con.prepareStatement("SELECT * FROM product_entity");
+             ResultSet rs = pst.executeQuery()) {
+
+            while (rs.next()) {
+                System.out.println("what");
+                products.add(new Product (rs.getString(1), rs.getString(2), rs.getString(3), rs.getLong(4)));
+            }
+
+        } catch (SQLException e) {
+            System.err.println(e.getClass().getName()+": "+e.getMessage());
+        }
+        int b = 1;
+        return products;
+    }
+    
+
     private static void initProductsTopic() throws InterruptedException {
         final Map<String, String> serdeConfig = Collections.singletonMap(
                 AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "http://localhost:8081");
